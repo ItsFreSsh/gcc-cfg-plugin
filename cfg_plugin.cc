@@ -42,7 +42,7 @@ namespace {
 
         std::cerr << "subgraph fun_" << fun << " {\n";
 
-        FOR_EACH_BB_FN(bb, fun) {
+        FOR_ALL_BB_FN(bb, fun) {
         gimple_bb_info *bb_info = &bb->il.gimple;
         //std::cerr << "bb_" << fun << "_" << bb->index << "[label=\"";
 
