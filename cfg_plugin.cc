@@ -39,7 +39,6 @@ namespace {
 
         virtual unsigned int execute(function *fun) override {
         basic_block bb;
-        gimple_stmt_iterator gsi;
 
         std::cerr << "subgraph fun_" << fun << " {\n";
 
@@ -61,17 +60,7 @@ namespace {
           std::cout << "block " << bb->index << std::endl;
           print_gimple_seq(stderr, bb_info->seq, 0, (dump_flags_t)0);
           print_gimple_seq(stdout, bb_info->seq, 0, (dump_flags_t)0);
-          // gimple_stmt_iterator gsi;
-
-          // for (gsi = gsi_start (bb_info->seq); !gsi_end_p (gsi); gsi_next (&gsi))
-          //{
-          //     gimple* g = gsi_stmt(gsi);
-          /* Do something with gimple statement G.  */
-          // std::cout << "--" << g->code << "--" << std::endl;
-          //}
-          // std::cout << "line" << gimple_seq_first() << std::endl;
           std::cout << "----" << std::endl;
-          // std::cout << BB_HEAD << std::endl;
         }
 
         edge e;
