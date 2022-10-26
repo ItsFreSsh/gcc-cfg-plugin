@@ -38,42 +38,44 @@ namespace {
         }
 
         virtual unsigned int execute(function *fun) override {
-        basic_block bb;
+          std::cout << function_name(fun) << std::endl;
+          std::cout << "----------" << std::endl;
+          basic_block bb;
 
-        std::cerr << "subgraph fun_" << fun << " {\n";
+          FOR_ALL_BB_FN(bb, fun) {
+            gimple_bb_info *bb_info = &bb->il.gimple;
+            gimple_stmt_iterator gsi;
 
-        FOR_ALL_BB_FN(bb, fun) {
-        gimple_bb_info *bb_info = &bb->il.gimple;
-        //std::cerr << "bb_" << fun << "_" << bb->index << "[label=\"";
+            // Entry block
+            if (bb->index == 0) {
+              std::cout << "BLOCK " << bb->index << "(ENTRY)" << std::endl;
+            }
+            // Exit block
+            else if (bb->index == 1) {
+              std::cout << "BLOCK " << bb->index << "(EXIT)" << std::endl;
+            }
+            // Other blocks
+            else {
+              std::cout << "BLOCK " << bb->index << std::endl << "**" << std::endl;
+              for (gsi = gsi_start(bb_info->seq); !gsi_end_p (gsi); gsi_next (&gsi)) {
+                gimple* g = gsi_stmt(gsi);
+                print_gimple_stmt(stdout, g, 0, (dump_flags_t)0);
+                location_t gloc = gimple_lineno(g); // original code line location
+                std::cout << "line " << gloc << std::endl;
+              }
+            }
 
-        // Entry block
-        if (bb->index == 0) {
-          std::cout << "ENTERING function: " << function_name(fun) << " in file: " << (LOCATION_FILE(fun->function_start_locus) ?: "<unknown>")
-                    << " on line:" << LOCATION_LINE(fun->function_start_locus) << std::endl;
-        }
-        // Exit block
-        else if (bb->index == 1) {
-          std::cout << "EXITING function: " << function_name(fun) << " in file: " << (LOCATION_FILE(fun->function_end_locus) ?: "<unknown>") << " on line :" << LOCATION_LINE(fun->function_end_locus) << std::endl;
-        }
-        // Other blocks
-        else {
-          std::cout << "block " << bb->index << std::endl;
-          print_gimple_seq(stderr, bb_info->seq, 0, (dump_flags_t)0);
-          print_gimple_seq(stdout, bb_info->seq, 0, (dump_flags_t)0);
-          std::cout << "----" << std::endl;
-        }
+            edge e;
+            edge_iterator ei;
 
-        edge e;
-        edge_iterator ei;
-
-        FOR_EACH_EDGE(e, ei, bb->succs)
-        {
-          basic_block dest = e->dest;
-          std::cerr << "bb_" << fun << "_" << bb->index << " -> bb_" << fun << "_" << dest->index << ";\n";
-          std::cout << function_name(fun) << " block " << bb->index << " -> " << dest->index << std::endl;
-          // fun->gimple_body
-        }
-      }
+            std::cout << "ROUTES FROM THIS BLOCK: ";
+            FOR_EACH_EDGE(e, ei, bb->succs) {
+              basic_block dest = e->dest;
+              std::cout << dest->index << " ";
+            }
+            std::cout << std::endl << "***" << std::endl;
+          }
+          std::cout << "\n\n" << std::endl;
       return 0;
     }
   };
