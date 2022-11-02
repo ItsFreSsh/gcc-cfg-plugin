@@ -17,4 +17,4 @@ compile and run
 
 > make clean
 
-clean up any compiled or outut files
+clean up any compiled or output files
