@@ -3,3 +3,6 @@
 
 # Compiled Dynamic libraries
 *.so
+
+#editor config
+.editorconfig
