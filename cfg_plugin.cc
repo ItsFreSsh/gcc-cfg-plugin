@@ -21,6 +21,8 @@ int plugin_is_GPL_compatible;
 // TODO: proper description
 static struct plugin_info my_gcc_plugin_info = {"1.0", "A plugin to retrieve cfg of cuntions and output json"};
 
+json::JSON output;
+
 
 namespace {
 	const pass_data ssa_pass_data = {
@@ -82,6 +84,10 @@ namespace {
 	};
 }
 
+// Print json, called after all other passes fnished
+void execute_finish_unit (void *gcc_data, void *user_data) {
+	std::cout << output << std::endl;
+}
 
 // Plugin initialization
 int plugin_init(struct plugin_name_args *plugin_info, struct plugin_gcc_version *version) {
@@ -105,7 +111,7 @@ register_callback(plugin_info->base_name,
 	pass_info.reference_pass_name = "ssa";
 	pass_info.ref_pass_instance_number = 1;
 	pass_info.pos_op = PASS_POS_INSERT_AFTER;
-
 	register_callback(plugin_info->base_name, PLUGIN_PASS_MANAGER_SETUP, NULL, &pass_info);
+	register_callback (plugin_info->base_name, PLUGIN_FINISH_UNIT, &execute_finish_unit, NULL);
 	return 0;
 }
