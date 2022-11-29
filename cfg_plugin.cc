@@ -1,6 +1,8 @@
 #include "gcc-plugin.h"
 #include "plugin-version.h"
 
+#include "includes/nbsdx/json.hpp"
+
 #include "tree-pass.h"
 #include "context.h"
 #include "basic-block.h"
