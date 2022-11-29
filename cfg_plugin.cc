@@ -41,21 +41,25 @@ namespace {
 		ssa_pass(gcc::context *ctx) : gimple_opt_pass(ssa_pass_data, ctx) {}
 
 		virtual unsigned int execute(function *fun) override {
-			std::cout << function_name(fun) << std::endl;
-			std::cout << "----------" << std::endl;
+			output[function_name(fun)] = json::Object();
 			basic_block bb;
 
 			FOR_ALL_BB_FN(bb, fun) {
 				gimple_bb_info *bb_info = &bb->il.gimple;
 				gimple_stmt_iterator gsi;
 
+				// Json statements array
+				output[function_name(fun)]["bb " + std::to_string(bb->index)]["stmts"] = json::Array();
+
 				// Entry block
 				if (bb->index == 0) {
-					std::cout << "BLOCK " << bb->index << "(ENTRY)" << std::endl;
+					std::string block_index = "bb " + std::to_string(bb->index);
+					output[function_name(fun)]["entry_block"] = block_index;
 				}
 				// Exit block
 				else if (bb->index == 1) {
-					std::cout << "BLOCK " << bb->index << "(EXIT)" << std::endl;
+					std::string block_index = "bb " + std::to_string(bb->index);
+					output[function_name(fun)]["exit_block"] = block_index;
 				}
 				// Other blocks
 				else {
@@ -70,11 +74,11 @@ namespace {
 
 				edge e;
 				edge_iterator ei;
-
-				std::cout << "ROUTES FROM THIS BLOCK: ";
+				output[function_name(fun)]["bb " + std::to_string(bb->index)]["succ"] = json::Array();
+				// Add all block successors
 				FOR_EACH_EDGE(e, ei, bb->succs) {
 					basic_block dest = e->dest;
-					std::cout << dest->index << " ";
+					output[function_name(fun)]["bb " + std::to_string(bb->index)]["succ"].append(dest->index);
 				}
 				std::cout << std::endl << "***" << std::endl;
 			}
